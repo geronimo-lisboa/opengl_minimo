@@ -9,6 +9,7 @@
 //#include "shaderUtils.h"
 #include <map>
 #include "rendering3d.h"
+#include "loadDicom.h"
 const std::string imagePath = GetExecutablePath();
 const int screenWidth = 300;
 const int screenHeight = 300;
@@ -22,6 +23,8 @@ int main(int argc, char** argv)
 		imageLoader->SetFileName(imagePath + "phantom.png");
 		imageLoader->Update();
 		ImageType::Pointer originalImage = imageLoader->GetOutput();
+		Float3dImageType::Pointer tomography = loadDicom("C:\\meus dicoms\\Marching Man");
+
 
 		//2)Criação da janela/contexto/blablabla da glfw.
 		GLFWwindow* window;
@@ -71,7 +74,8 @@ int main(int argc, char** argv)
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			if (!isInitialized)
 			{
-				obj = make_shared<Object3d>(imagePath + "vertexShader.glsl", imagePath + "fragmentShader.glsl", originalImage);
+				//obj = make_shared<Object3dTexture2d>(imagePath + "vertexShader.glsl", imagePath + "fragmentShader.glsl", originalImage);
+				obj = make_shared<Object3dTexture3d>(imagePath + "vertexShader.glsl", imagePath + "fragmentShader.glsl", tomography);
 				isInitialized = true;
 			}
 			else

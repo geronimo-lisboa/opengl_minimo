@@ -161,15 +161,24 @@ void Shader::UseProgram()
 	glUseProgram(this->programId);
 }
 
-Object3d::Object3d(std::string vsfile, std::string fsfile, itk::Image<float, 2>::Pointer imagem) : shader(vsfile, fsfile)
+template <typename T>const GLuint Object3d::CreateBuffer(GLenum target, std::vector<T> &vec)
 {
-	glDisable(GL_CULL_FACE);
+	GLuint resultBuffer = 0;
+	glGenBuffers(1, &resultBuffer);
+	glBindBuffer(target, resultBuffer);
+	glBufferData(target, vec.size() * sizeof(vec.at(0)), vec.data(), GL_STATIC_DRAW);
+	return resultBuffer;
+}
+
+Object3dTexture2d::Object3dTexture2d(std::string vsfile, std::string fsfile, itk::Image<float, 2>::Pointer imagem) :
+Object3d(vsfile, fsfile)
+{
 	this->image = imagem;
 	//Criação da textura
 	texture = 0;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, imagem->GetLargestPossibleRegion().GetSize()[0], 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, imagem->GetLargestPossibleRegion().GetSize()[0],
 		imagem->GetLargestPossibleRegion().GetSize()[1], 0, GL_RED, GL_FLOAT, imagem->GetBufferPointer());
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -179,39 +188,27 @@ Object3d::Object3d(std::string vsfile, std::string fsfile, itk::Image<float, 2>:
 	vertexes.push_back(1.0f); vertexes.push_back(-1.0f); vertexes.push_back(0.0f);
 	vertexes.push_back(-1.0f); vertexes.push_back(1.0f); vertexes.push_back(0.0f);
 	vertexes.push_back(1.0f); vertexes.push_back(1.0f); vertexes.push_back(0.0f);
-	
-	//cores triangulo 1
+
 	colors.push_back(1.0f); colors.push_back(0.0f); colors.push_back(0.0f);
 	colors.push_back(0.0f); colors.push_back(1.0f); colors.push_back(0.0f);
 	colors.push_back(0.0f); colors.push_back(0.0f); colors.push_back(1.0f);
 	colors.push_back(0.0f); colors.push_back(0.1f); colors.push_back(0.0f);
 
-	//TexCoord triangulo 1
 	texCoords.push_back(0.0f); texCoords.push_back(0.0f);
 	texCoords.push_back(0.0f); texCoords.push_back(1.0f);
 	texCoords.push_back(1.0f); texCoords.push_back(0.0f);
 	texCoords.push_back(1.0f); texCoords.push_back(1.0f);
 
-	vertexesVbo = 0;//Cria o buffer dos vertices e passa os dados pra ele.
-	glGenBuffers(1, &vertexesVbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexesVbo);
-	glBufferData(GL_ARRAY_BUFFER, vertexes.size() * sizeof(float), vertexes.data(), GL_STATIC_DRAW);
+	vertexesVbo = CreateBuffer<float>(GL_ARRAY_BUFFER, vertexes);
+	colorsVbo = CreateBuffer<float>(GL_ARRAY_BUFFER, colors);
+	texVbo = CreateBuffer<float>(GL_ARRAY_BUFFER, texCoords);
 
-	colorsVbo = 0;
-	glGenBuffers(1, &colorsVbo);
-	glBindBuffer(GL_ARRAY_BUFFER, colorsVbo);
-	glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), colors.data(), GL_STATIC_DRAW);
-
-	texVbo = 0;
-	glGenBuffers(1, &texVbo);
-	glBindBuffer(GL_ARRAY_BUFFER, texVbo);
-	glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), texCoords.data(), GL_STATIC_DRAW);
-
-	vao = 0;//Cria o vertex array object e liga o buffer a ele
+	vao = 0;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
 	shader.UseProgram();
+	//eu SEI qual é o nome das coisas no shader e esses nomes vem de lá
 	GLuint vpLocation = shader.GetAttribute("vp");
 	GLuint vcLocation = shader.GetAttribute("vc");
 	GLuint uvLocation = shader.GetAttribute("uv");
@@ -229,9 +226,8 @@ Object3d::Object3d(std::string vsfile, std::string fsfile, itk::Image<float, 2>:
 
 }
 
-void Object3d::Render()
+void Object3dTexture2d::Render()
 {
-
 	shader.UseProgram();
 	glBindVertexArray(vao);
 	GLuint vpLocation = shader.GetAttribute("vp");
@@ -244,7 +240,7 @@ void Object3d::Render()
 
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(textureSamplerLocation, 0);
-	glBindTexture(GL_TEXTURE_2D, texture); 		
+	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glBindAttribLocation(shader.GetProgramId(), vpLocation, "vp");
 	glBindAttribLocation(shader.GetProgramId(), vcLocation, "vc");
@@ -253,3 +249,14 @@ void Object3d::Render()
 	teste_opengl();
 }
 
+Object3dTexture3d::Object3dTexture3d(std::string vsfile, std::string fsfile, itk::Image<float, 3>::Pointer imagem) :
+Object3d(vsfile, fsfile)
+{
+	this->image = imagem;
+	//cria a textura
+	//cria os buffers
+}
+void Object3dTexture3d::Render()
+{
+
+}
