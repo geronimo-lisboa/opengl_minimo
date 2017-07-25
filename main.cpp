@@ -75,7 +75,8 @@ int main(int argc, char** argv)
 			if (!isInitialized)
 			{
 				//obj = make_shared<Object3dTexture2d>(imagePath + "vertexShader.glsl", imagePath + "fragmentShader.glsl", originalImage);
-				obj = make_shared<Object3dTexture3d>(imagePath + "vertexShader3d.glsl", imagePath + "fragmentShader3d.glsl", tomography);
+				obj = make_shared<Object3dTexture3d>(imagePath + "vertexShader3d.glsl",
+					imagePath + "fragmentShader3d.glsl", tomography);
 				isInitialized = true;
 			}
 			else
