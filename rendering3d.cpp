@@ -254,9 +254,83 @@ Object3d(vsfile, fsfile)
 {
 	this->image = imagem;
 	//cria a textura
+
+	texture = 0;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_3D, texture);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_RED,
+		imagem->GetLargestPossibleRegion().GetSize()[0],
+		imagem->GetLargestPossibleRegion().GetSize()[1],
+		imagem->GetLargestPossibleRegion().GetSize()[2], 0,
+		GL_RED,
+		GL_FLOAT, image->GetBufferPointer());
 	//cria os buffers
+	vertexes.push_back(-1.0f); vertexes.push_back(-1.0f); vertexes.push_back(0.0f);
+	vertexes.push_back(1.0f); vertexes.push_back(-1.0f); vertexes.push_back(0.0f);
+	vertexes.push_back(-1.0f); vertexes.push_back(1.0f); vertexes.push_back(0.0f);
+	vertexes.push_back(1.0f); vertexes.push_back(1.0f); vertexes.push_back(0.0f);
+
+	colors.push_back(1.0f); colors.push_back(0.0f); colors.push_back(0.0f);
+	colors.push_back(0.0f); colors.push_back(1.0f); colors.push_back(0.0f);
+	colors.push_back(0.0f); colors.push_back(0.0f); colors.push_back(1.0f);
+	colors.push_back(0.0f); colors.push_back(0.1f); colors.push_back(0.0f);
+
+	texCoords.push_back(0.0f); texCoords.push_back(0.0f);texCoords.push_back(0.5f);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f);texCoords.push_back(0.5f);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f);texCoords.push_back(0.5f);
+	texCoords.push_back(1.0f); texCoords.push_back(1.0f);texCoords.push_back(0.5f);
+
+	vertexesVbo = CreateBuffer<float>(GL_ARRAY_BUFFER, vertexes);
+	colorsVbo = CreateBuffer<float>(GL_ARRAY_BUFFER, colors);
+	texVbo = CreateBuffer<float>(GL_ARRAY_BUFFER, texCoords);
+
+	vao = 0;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	shader.UseProgram();
+	//eu SEI qual é o nome das coisas no shader e esses nomes vem de lá
+	GLuint vpLocation = shader.GetAttribute("vp");
+	GLuint vcLocation = shader.GetAttribute("vc");
+	GLuint uvLocation = shader.GetAttribute("uv");
+	glEnableVertexAttribArray(vpLocation);
+	glEnableVertexAttribArray(vcLocation);
+	glEnableVertexAttribArray(uvLocation);
+	glUseProgram(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexesVbo);
+	glVertexAttribPointer(vpLocation, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, colorsVbo);
+	glVertexAttribPointer(vcLocation, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, texVbo);
+	glVertexAttribPointer(uvLocation, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
 }
 void Object3dTexture3d::Render()
 {
+	shader.UseProgram();
+	glBindVertexArray(vao);
+	GLuint vpLocation = shader.GetAttribute("vp");
+	GLuint vcLocation = shader.GetAttribute("vc");
+	GLuint uvLocation = shader.GetAttribute("uv");
+	GLuint textureSamplerLocation = shader.GetUniform("myTextureSampler");
+	GLuint useTextureLocation = shader.GetUniform("useTexture");
+
+	glUniform1i(useTextureLocation, false);//Flag de controle no shader
+
+	glActiveTexture(GL_TEXTURE0);
+	glUniform1i(textureSamplerLocation, 0);
+	glBindTexture(GL_TEXTURE_3D, texture);
+
+	glBindAttribLocation(shader.GetProgramId(), vpLocation, "vp");
+	glBindAttribLocation(shader.GetProgramId(), vcLocation, "vc");
+	glBindAttribLocation(shader.GetProgramId(), uvLocation, "uv");
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	teste_opengl();
 
 }
