@@ -6,7 +6,7 @@
 #include "misc.h"
 #include <memory>
 #include <vector>
-#include "shaderUtils.h"
+//#include "shaderUtils.h"
 #include <map>
 #include "rendering3d.h"
 const std::string imagePath = GetExecutablePath();
