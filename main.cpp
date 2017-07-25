@@ -6,7 +6,7 @@
 #include "misc.h"
 #include <memory>
 #include <vector>
-//#include "shaderUtils.h"
+#include <itkMinimumMaximumImageFilter.h>
 #include <map>
 #include "rendering3d.h"
 #include "loadDicom.h"
@@ -24,7 +24,11 @@ int main(int argc, char** argv)
 		imageLoader->Update();
 		ImageType::Pointer originalImage = imageLoader->GetOutput();
 		Float3dImageType::Pointer tomography = loadDicom("C:\\meus dicoms\\Marching Man");
-
+		itk::MinimumMaximumImageFilter<Float3dImageType>::Pointer minmax = itk::MinimumMaximumImageFilter<Float3dImageType>::New();
+		minmax->SetInput(tomography);
+		minmax->Update();
+		std::cout << "max = " << minmax->GetMaximum() << std::endl;
+		std::cout << "min = " << minmax->GetMinimum() << std::endl;
 
 		//2)Criação da janela/contexto/blablabla da glfw.
 		GLFWwindow* window;

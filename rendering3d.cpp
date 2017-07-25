@@ -263,12 +263,14 @@ Object3d(vsfile, fsfile)
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_RED,
+	glTexImage3D(GL_TEXTURE_3D, 0,
+		GL_R16F /*GL_RED*/,//INTERNAL FORMAT
 		imagem->GetLargestPossibleRegion().GetSize()[0],
 		imagem->GetLargestPossibleRegion().GetSize()[1],
 		imagem->GetLargestPossibleRegion().GetSize()[2], 0,
-		GL_RED,
-		GL_FLOAT, image->GetBufferPointer());
+		 GL_RED,//FORMAT
+		GL_FLOAT, //TYPE
+		image->GetBufferPointer());
 	//cria os buffers
 	vertexes.push_back(-1.0f); vertexes.push_back(-1.0f); vertexes.push_back(0.0f);
 	vertexes.push_back(1.0f); vertexes.push_back(-1.0f); vertexes.push_back(0.0f);
