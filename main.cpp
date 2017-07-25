@@ -14,6 +14,8 @@ const std::string imagePath = GetExecutablePath();
 const int screenWidth = 300;
 const int screenHeight = 300;
 
+shared_ptr<Object3d> obj = nullptr;
+
 int main(int argc, char** argv)
 {
 	try
@@ -49,12 +51,7 @@ int main(int argc, char** argv)
 			glfwTerminate();
 			throw std::exception("Não foi possivel criar a janela");
 		}
-		//Seta o callback de tecla;
-		glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-		{
-			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)//Esc = encerra o programa.
-				glfwSetWindowShouldClose(window, GLFW_TRUE);
-		});
+
 		glfwMakeContextCurrent(window);
 		// start GLEW extension handler
 		glewExperimental = GL_TRUE;
@@ -71,7 +68,7 @@ int main(int argc, char** argv)
 		glfwSwapInterval(1);
 		glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 
-		shared_ptr<Object3d> obj = nullptr;
+
 		bool isInitialized = false;
 		while (!glfwWindowShouldClose(window))
 		{
@@ -79,8 +76,23 @@ int main(int argc, char** argv)
 			if (!isInitialized)
 			{
 				//obj = make_shared<Object3dTexture2d>(imagePath + "vertexShader.glsl", imagePath + "fragmentShader.glsl", originalImage);
-				obj = make_shared<Object3dTexture3d>(imagePath + "vertexShader3d.glsl",
-					imagePath + "fragmentShader3d.glsl", tomography);
+				obj = make_shared<Object3dTexture3d>(imagePath + "vertexShader3d.glsl", imagePath + "fragmentShader3d.glsl", tomography);
+				//Seta o callback de tecla;
+				glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+				{
+					if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)//Esc = encerra o programa.
+						glfwSetWindowShouldClose(window, GLFW_TRUE);
+					if (key == GLFW_KEY_W && action == GLFW_PRESS)
+					{
+						Object3dTexture3d* myObj = dynamic_cast<Object3dTexture3d*>(obj.get());
+						myObj->Avancar();
+					}
+					if (key == GLFW_KEY_S && action == GLFW_PRESS)
+					{
+						Object3dTexture3d* myObj = dynamic_cast<Object3dTexture3d*>(obj.get());
+						myObj->Recuar();
+					}
+				});
 				isInitialized = true;
 			}
 			else
@@ -89,7 +101,6 @@ int main(int argc, char** argv)
 			}
 			glfwPollEvents();
 			glfwSwapBuffers(window);
-
 		}
 		//4) Fim do loop principal
 		//Limpa tudo e morre.

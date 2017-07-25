@@ -264,7 +264,7 @@ Object3d(vsfile, fsfile)
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 	glTexImage3D(GL_TEXTURE_3D, 0,
-		GL_R16F /*GL_RED*/,//INTERNAL FORMAT
+		GL_R16F,//INTERNAL FORMAT
 		imagem->GetLargestPossibleRegion().GetSize()[0],
 		imagem->GetLargestPossibleRegion().GetSize()[1],
 		imagem->GetLargestPossibleRegion().GetSize()[2], 0,
@@ -334,5 +334,30 @@ void Object3dTexture3d::Render()
 	glBindAttribLocation(shader.GetProgramId(), uvLocation, "uv");
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	teste_opengl();
+}
+static float posNaTex = 0.5;
+
+void Object3dTexture3d::Avancar()
+{
+	posNaTex = posNaTex + 0.01;
+	texCoords.clear();
+	texCoords.push_back(0.0f); texCoords.push_back(0.0f); texCoords.push_back(posNaTex);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f); texCoords.push_back(posNaTex);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f); texCoords.push_back(posNaTex);
+	texCoords.push_back(1.0f); texCoords.push_back(1.0f); texCoords.push_back(posNaTex);
+	glBindBuffer(GL_ARRAY_BUFFER, texVbo);
+	glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(texCoords.at(0)), texCoords.data(), GL_STATIC_DRAW);
+
+}
+void Object3dTexture3d::Recuar()
+{
+	posNaTex = posNaTex - 0.01;
+	texCoords.clear();
+	texCoords.push_back(0.0f); texCoords.push_back(0.0f); texCoords.push_back(posNaTex);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f); texCoords.push_back(posNaTex);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f); texCoords.push_back(posNaTex);
+	texCoords.push_back(1.0f); texCoords.push_back(1.0f); texCoords.push_back(posNaTex);
+	glBindBuffer(GL_ARRAY_BUFFER, texVbo);
+	glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(texCoords.at(0)), texCoords.data(), GL_STATIC_DRAW);
 
 }

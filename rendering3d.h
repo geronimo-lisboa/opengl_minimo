@@ -80,4 +80,6 @@ private:
 public:
 	Object3dTexture3d(std::string vsfile, std::string fsfile, itk::Image<float, 3>::Pointer imagem);
 	void Render();
+	void Avancar();
+	void Recuar();
 };
