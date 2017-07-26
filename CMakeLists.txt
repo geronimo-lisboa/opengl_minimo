@@ -26,7 +26,9 @@ target_link_libraries(opengl_minimo C:/libs/glew-2.0.0/lib/Release/Win32/glew32.
 include_directories(C:/libs/glfw/include)
 target_link_libraries(opengl_minimo debug C:/libs/glfw_bin/src/Debug/glfw3.lib)
 target_link_libraries(opengl_minimo optimized C:/libs/glfw_bin/src/Release/glfw3.lib)
-
+#Adds EIGEN3
+SET (EIGEN3_INCLUDE_DIR "C:/Program Files (x86)/Eigen3/include")
+include_directories(${EIGEN3_INCLUDE_DIR})
 
 #suprime o warning chato dos infernos que a ITK gera por usar funções inseguras da api do windows
 add_definitions(-D_SCL_SECURE_NO_WARNINGS)

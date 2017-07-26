@@ -134,6 +134,16 @@ Shader::Shader(string vsPath, string fsPath)
 	introspectProgram(programId, attributes, uniforms);
 }
 
+Shader::Shader(stringstream vsStream, stringstream fsStream)
+{
+	std::string vsSrc = vsStream.str();
+	vsId = MakeShader(GL_VERTEX_SHADER, vsSrc);
+	std::string fsSrc = fsStream.str();
+	fsId = MakeShader(GL_FRAGMENT_SHADER, fsSrc);
+	programId = MakeProgram(vsId, fsId);
+	introspectProgram(programId, attributes, uniforms);
+}
+
 Shader::~Shader()
 {
 	glDeleteShader(vsId);

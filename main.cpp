@@ -10,11 +10,13 @@
 #include <map>
 #include "rendering3d.h"
 #include "loadDicom.h"
+#include "volumeRendering.h"
 const std::string imagePath = GetExecutablePath();
 const int screenWidth = 300;
 const int screenHeight = 300;
 
 shared_ptr<Object3d> obj = nullptr;
+shared_ptr<MyVolumeRenderer> volume = nullptr;
 
 int main(int argc, char** argv)
 {
@@ -77,8 +79,9 @@ int main(int argc, char** argv)
 			{
 				glEnable(GL_DEPTH_TEST);
 				glDepthFunc(GL_LESS);
-				//obj = make_shared<Object3dTexture2d>(imagePath + "vertexShader.glsl", imagePath + "fragmentShader.glsl", originalImage);
-				obj = make_shared<Object3dTexture3d>(imagePath + "vertexShader3d.glsl", imagePath + "fragmentShader3d.glsl", tomography);
+				//obj = make_shared<Object3dTexture2d>(imagePath + "vertexShader.glsl", imagePath + "fragmentShader.glsl", originalImage); --TESTE PRA CARREGAR UMA TEXTURA
+				//obj = make_shared<Object3dTexture3d>(imagePath + "vertexShader3d.glsl", imagePath + "fragmentShader3d.glsl", tomography);--TESTE DA TEXTURA 3D
+				volume = make_shared<MyVolumeRenderer>();
 				//Seta o callback de tecla;
 				glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 				{
@@ -99,7 +102,8 @@ int main(int argc, char** argv)
 			}
 			else
 			{
-				obj->Render();
+				//obj->Render(); -- Passei pro teste do volume renderer...
+				volume->Render();
 			}
 			glfwPollEvents();
 			glfwSwapBuffers(window);

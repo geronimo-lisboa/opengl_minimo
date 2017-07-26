@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+﻿cmake_minimum_required(VERSION 2.8)
 set(CMAKE_SUPPRESS_REGENERATION true)
 project(radon-transform-mk2)
 
@@ -26,6 +26,9 @@ target_link_libraries(radon-transform-mk2 C:/libs/glew-2.0.0/lib/Release/Win32/g
 include_directories(C:/libs/glfw/include)
 target_link_libraries(radon-transform-mk2 debug C:/libs/glfw_bin/src/Debug/glfw3.lib)
 target_link_libraries(radon-transform-mk2 optimized C:/libs/glfw_bin/src/Release/glfw3.lib)
+#Adds EIGEN3
+SET (EIGEN3_INCLUDE_DIR "C:/Program Files (x86)/Eigen3/include")
+include_directories(${EIGEN3_INCLUDE_DIR})
 
 
 #suprime o warning chato dos infernos que a ITK gera por usar funções inseguras da api do windows
