@@ -4,17 +4,18 @@
 
 using namespace std;
 
-stringstream defineVertexBuffer()
+stringstream defineVertexShader()
 {
 	stringstream ss;
 	ss << "#version 400" << endl;
 	ss << "layout(location = 0) in vec3 vertex;" << endl;
+	ss << "uniform mat4 mvp;" << endl;
 	ss << "void main(){" << endl;
-	ss << "  gl_Position = vec4(vertex, 1.0);" << endl;
+	ss << "  gl_Position = mvp * vec4(vertex, 1.0);" << endl;
 	ss << "}" << endl;
 	return ss;
 }
-stringstream defineFragmentBuffer()
+stringstream defineFragmentShader()
 {
 	stringstream ss;
 	ss << "#version 400" << endl;
@@ -42,7 +43,7 @@ MyVolumeRenderer::MyVolumeRenderer()
 {
 	//O que tem que ser feito aqui:
 	//1)Criar o shader do volume renderer
-	myShader = make_shared<Shader>(defineVertexBuffer(), defineFragmentBuffer());
+	myShader = make_shared<Shader>(defineVertexShader(), defineFragmentShader());
 	//2)Criar o cubo de suporte
 	vertexes = defineVertexes();
 	vertexesVbo = CreateBuffer<float>(GL_ARRAY_BUFFER, vertexes);
@@ -58,19 +59,30 @@ MyVolumeRenderer::MyVolumeRenderer()
 }
 MyVolumeRenderer::~MyVolumeRenderer()
 {
-	//O que deve ser feito aqui:
-	//Deletar buffers.
 	glDeleteVertexArrays(1, &vao);
 	glDeleteBuffers(1, &vertexesVbo);
 }
 void MyVolumeRenderer::Render()
 {
+	//Por enquanto a câmera é aqui mesmo...
+	Vector3f eye, focus, vup;
+	eye << 0.0, 0.0, 3.0;
+	focus << 0.0, 0.0, 0.0;
+	vup << 0.0, 1.0, 0.0;
+	lookAt(eye, focus, vup);
+	setPerspective(45, 1, 0.01, 100);
+	mModelMatrix.Identity();
+	Matrix4f mvp = mProjectionMatrix * mViewMatrix * mModelMatrix;
 	//O que tem que ser feito aqui:
 	//1)Exibir o cubo de suporte na tela
 	//2)Rotacioná-lo para eu ver se está tudo ok.
 	myShader->UseProgram();
+	GLuint mvpLocation = myShader->GetUniform("mvp");
+	glUniformMatrix4fv(mvpLocation, 1, GL_FALSE, mvp.data());
+
 	glBindVertexArray(vao);
 	GLuint vertexLocation = myShader->GetAttribute("vertex");
 	glBindAttribLocation(myShader->GetProgramId(), vertexLocation, "vertex");
 	glDrawArrays(GL_TRIANGLES, 0, vertexes.size() / 3);
+	std::cout << "aa" << endl;
 }
