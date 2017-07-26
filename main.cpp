@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 		imageLoader->SetFileName(imagePath + "phantom.png");
 		imageLoader->Update();
 		ImageType::Pointer originalImage = imageLoader->GetOutput();
-		Float3dImageType::Pointer tomography = loadDicom("C:\\meus dicoms\\Marching Man");
+		Float3dImageType::Pointer tomography = loadDicom("C:\\Users\\geronimo\\dicom\\Marching Man");
 		itk::MinimumMaximumImageFilter<Float3dImageType>::Pointer minmax = itk::MinimumMaximumImageFilter<Float3dImageType>::New();
 		minmax->SetInput(tomography);
 		minmax->Update();
