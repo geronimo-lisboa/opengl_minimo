@@ -56,6 +56,15 @@ MyVolumeRenderer::MyVolumeRenderer()
 	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexesVbo);
 	glVertexAttribPointer(vpLocation, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	mProjectionMatrix << 1, 0, 0, 0,
+						 0, 1, 0, 0,
+						 0, 0, 1, 0,
+						 0, 0, 0, 1;
+	mViewMatrix << 1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1;
 }
 MyVolumeRenderer::~MyVolumeRenderer()
 {
@@ -66,12 +75,15 @@ void MyVolumeRenderer::Render()
 {
 	//Por enquanto a câmera é aqui mesmo...
 	Vector3f eye, focus, vup;
-	eye << 0.0, 0.0, 3.0;
+	eye << 0.0, 0.0, -3.0;
 	focus << 0.0, 0.0, 0.0;
 	vup << 0.0, 1.0, 0.0;
 	lookAt(eye, focus, vup);
 	setPerspective(45, 1, 0.01, 100);
-	mModelMatrix.Identity();
+	mModelMatrix << 1, 0, 0, 0,
+					0, 1, 0, 0,
+					0, 0, 1, 0,
+					0, 0, 0, 1;
 	Matrix4f mvp = mProjectionMatrix * mViewMatrix * mModelMatrix;
 	//O que tem que ser feito aqui:
 	//1)Exibir o cubo de suporte na tela
