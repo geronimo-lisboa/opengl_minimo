@@ -3,7 +3,7 @@
 #include <eigen3\Eigen\Geometry>
 using namespace std;
 using namespace Eigen;
-class MyVolumeRenderer
+class CubeExample
 {
 private:
 	shared_ptr<Shader> myShader;
@@ -44,8 +44,8 @@ private:
 		return resultBuffer;
 	}
 public:
-	MyVolumeRenderer();
-	~MyVolumeRenderer();
+	CubeExample();
+	~CubeExample();
 	void Render();
 	void RotateAround(int axisId, float degs);
 };

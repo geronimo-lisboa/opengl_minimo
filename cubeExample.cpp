@@ -1,6 +1,7 @@
 #include "volumeRendering.h"
 #include <sstream>
 #include "rendering3d.h"
+#include "cubeExample.h"
 
 using namespace std;
 
@@ -81,7 +82,7 @@ vector<GLfloat> defineVertexes()
 	return v;
 }
 
-MyVolumeRenderer::MyVolumeRenderer()
+CubeExample::CubeExample()
 {
 	//O que tem que ser feito aqui:
 	//1)Criar o shader do volume renderer
@@ -113,7 +114,7 @@ MyVolumeRenderer::MyVolumeRenderer()
 					0, 0, 0, 1;
 }
 
-void MyVolumeRenderer::RotateAround(int axisId, float degs)
+void CubeExample::RotateAround(int axisId, float degs)
 {
 	Vector3f axis;
 	if (axisId == 0)axis << 1, 0, 0;
@@ -133,12 +134,12 @@ void MyVolumeRenderer::RotateAround(int axisId, float degs)
 
 }
 
-MyVolumeRenderer::~MyVolumeRenderer()
+CubeExample::~CubeExample()
 {
 	glDeleteVertexArrays(1, &vao);
 	glDeleteBuffers(1, &vertexesVbo);
 }
-void MyVolumeRenderer::Render()
+void CubeExample::Render()
 {
 	//Por enquanto a câmera é aqui mesmo...
 	Vector3f eye, focus, vup;

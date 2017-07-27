@@ -10,13 +10,13 @@
 #include <map>
 #include "rendering3d.h"
 #include "loadDicom.h"
-#include "volumeRendering.h"
+#include "cubeExample.h"
 const std::string imagePath = GetExecutablePath();
 const int screenWidth = 300;
 const int screenHeight = 300;
 
 shared_ptr<Object3d> obj = nullptr;
-shared_ptr<MyVolumeRenderer> volume = nullptr;
+shared_ptr<CubeExample> volume = nullptr;
 
 int main(int argc, char** argv)
 {
@@ -27,12 +27,12 @@ int main(int argc, char** argv)
 		imageLoader->SetFileName(imagePath + "phantom.png");
 		imageLoader->Update();
 		ImageType::Pointer originalImage = imageLoader->GetOutput();
-		Float3dImageType::Pointer tomography = loadDicom("C:\\Users\\geronimo\\dicom\\Marching Man");
-		itk::MinimumMaximumImageFilter<Float3dImageType>::Pointer minmax = itk::MinimumMaximumImageFilter<Float3dImageType>::New();
-		minmax->SetInput(tomography);
-		minmax->Update();
-		std::cout << "max = " << minmax->GetMaximum() << std::endl;
-		std::cout << "min = " << minmax->GetMinimum() << std::endl;
+		//Float3dImageType::Pointer tomography = loadDicom("C:\\Users\\geronimo\\dicom\\Marching Man");
+		//itk::MinimumMaximumImageFilter<Float3dImageType>::Pointer minmax = itk::MinimumMaximumImageFilter<Float3dImageType>::New();
+		//minmax->SetInput(tomography);
+		//minmax->Update();
+		//std::cout << "max = " << minmax->GetMaximum() << std::endl;
+		//std::cout << "min = " << minmax->GetMinimum() << std::endl;
 
 		//2)Criação da janela/contexto/blablabla da glfw.
 		GLFWwindow* window;
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 				glDepthFunc(GL_LESS);
 				//obj = make_shared<Object3dTexture2d>(imagePath + "vertexShader.glsl", imagePath + "fragmentShader.glsl", originalImage); --TESTE PRA CARREGAR UMA TEXTURA
 				//obj = make_shared<Object3dTexture3d>(imagePath + "vertexShader3d.glsl", imagePath + "fragmentShader3d.glsl", tomography);--TESTE DA TEXTURA 3D
-				volume = make_shared<MyVolumeRenderer>();
+				volume = make_shared<CubeExample>();
 				//Seta o callback de tecla;
 				glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 				{
