@@ -7,8 +7,8 @@ class CubeExample
 {
 private:
 	shared_ptr<Shader> myShader;
-	vector<GLfloat> vertexes;
-	GLuint vao, vertexesVbo;
+	vector<GLfloat> vertexes, normals;
+	GLuint vao, vertexesVbo, normalsVbo;
 	//Por enquanto a infraestrutura de câmera ficará aqui. Depois movo para um lugar mais conveniente
 	Matrix4f mViewMatrix, mProjectionMatrix, mModelMatrix;
 	void lookAt(const Eigen::Vector3f& position, const Eigen::Vector3f& target, const Eigen::Vector3f& up)
