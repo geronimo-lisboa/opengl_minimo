@@ -72,6 +72,7 @@ int main(int argc, char** argv)
 
 
 		bool isInitialized = false;
+		float ang = 0;
 		while (!glfwWindowShouldClose(window))
 		{
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -102,6 +103,8 @@ int main(int argc, char** argv)
 			}
 			else
 			{
+				volume->RotateAround(1, ang);
+				ang = ang+1;
 				//obj->Render(); -- Passei pro teste do volume renderer...
 				volume->Render();
 			}

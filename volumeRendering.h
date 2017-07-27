@@ -47,4 +47,5 @@ public:
 	MyVolumeRenderer();
 	~MyVolumeRenderer();
 	void Render();
+	void RotateAround(int axisId, float degs);
 };

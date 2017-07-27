@@ -28,13 +28,55 @@ stringstream defineFragmentShader()
 vector<GLfloat> defineVertexes()
 {
 	vector<GLfloat> v;
-	v.push_back(-1.0); v.push_back(-1.0); v.push_back(0.0); //IE
-	v.push_back( 1.0); v.push_back(-1.0); v.push_back(0.0); //ID
-	v.push_back(-1.0); v.push_back( 1.0); v.push_back(0.0); //SE
+	v.push_back(-1.0); v.push_back(-1.0); v.push_back(1.0); //IEF
+	v.push_back( 1.0); v.push_back(-1.0); v.push_back(1.0); //IDF
+	v.push_back(-1.0); v.push_back( 1.0); v.push_back(1.0); //SEF
 
-	v.push_back( 1.0); v.push_back(-1.0); v.push_back(0.0); //ID
-	v.push_back( 1.0); v.push_back( 1.0); v.push_back(0.0); //SD
-	v.push_back(-1.0); v.push_back( 1.0);  v.push_back(0.0);//SE
+	v.push_back( 1.0); v.push_back(-1.0); v.push_back(1.0); //IDF
+	v.push_back( 1.0); v.push_back( 1.0); v.push_back(1.0); //SDF
+	v.push_back(-1.0); v.push_back( 1.0);  v.push_back(1.0);//SEF
+
+	v.push_back(-1.0); v.push_back(-1.0); v.push_back(-1.0); //IEB
+	v.push_back(1.0); v.push_back(-1.0); v.push_back(-1.0); //IDB
+	v.push_back(-1.0); v.push_back(1.0); v.push_back(-1.0); //SEB
+
+	v.push_back(1.0); v.push_back(-1.0); v.push_back(-1.0); //IDB
+	v.push_back(1.0); v.push_back(1.0); v.push_back(-1.0); //SDB
+	v.push_back(-1.0); v.push_back(1.0);  v.push_back(-1.0);//SEB
+
+
+	v.push_back(-1.0); v.push_back(-1.0); v.push_back(-1.0);  //IEB
+	v.push_back(1.0); v.push_back(-1.0); v.push_back(-1.0);  //IDB
+	v.push_back(-1.0); v.push_back(-1.0); v.push_back(1.0);  //IES
+
+	v.push_back(1.0); v.push_back(-1.0); v.push_back(-1.0);   //IDB
+	v.push_back(1.0); v.push_back(-1.0); v.push_back(1.0);  //SDB
+	v.push_back(-1.0); v.push_back(-1.0); v.push_back(1.0); //SEB
+
+	v.push_back(-1.0); v.push_back(1.0); v.push_back(-1.0);  //IEB
+	v.push_back(1.0); v.push_back(1.0); v.push_back(-1.0);  //IDB
+	v.push_back(-1.0); v.push_back(1.0); v.push_back(1.0);  //IES
+
+	v.push_back(1.0); v.push_back(1.0); v.push_back(-1.0);   //IDB
+	v.push_back(1.0); v.push_back(1.0); v.push_back(1.0);  //SDB
+	v.push_back(-1.0); v.push_back(1.0); v.push_back(1.0); //SEB
+	//------
+	v.push_back(1.0); v.push_back(-1.0); v.push_back(-1.0);  //IEF
+	v.push_back(1.0); v.push_back(1.0); v.push_back(-1.0);  //IDF
+	v.push_back(1.0); v.push_back(-1.0); v.push_back(1.0);  //SEF
+
+	v.push_back(1.0); v.push_back(1.0); v.push_back(-1.0); //IDF
+	v.push_back(1.0); v.push_back(1.0); v.push_back(1.0); //SDF
+	v.push_back(1.0); v.push_back(-1.0); v.push_back(1.0); //SEF
+	//------
+	v.push_back(-1.0); v.push_back(-1.0); v.push_back(-1.0);  //IEF
+	v.push_back(-1.0); v.push_back(1.0); v.push_back(-1.0);  //IDF
+	v.push_back(-1.0); v.push_back(-1.0); v.push_back(1.0);  //SEF
+
+	v.push_back(-1.0); v.push_back(1.0); v.push_back(-1.0);  //IDF
+	v.push_back(-1.0); v.push_back(1.0); v.push_back(1.0);  //SDF
+	v.push_back(-1.0); v.push_back(-1.0); v.push_back(1.0); //SEF
+
 
 	return v;
 }
@@ -56,16 +98,41 @@ MyVolumeRenderer::MyVolumeRenderer()
 	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexesVbo);
 	glVertexAttribPointer(vpLocation, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
+	//Valores iniciais das matrizes
 	mProjectionMatrix << 1, 0, 0, 0,
 						 0, 1, 0, 0,
 						 0, 0, 1, 0,
 						 0, 0, 0, 1;
 	mViewMatrix << 1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1;
+				   0, 1, 0, 0,
+				   0, 0, 1, 0,
+				   0, 0, 0, 1;
+	mModelMatrix << 1, 0, 0, 0,
+					0, 1, 0, 0,
+					0, 0, 1, 0,
+					0, 0, 0, 1;
 }
+
+void MyVolumeRenderer::RotateAround(int axisId, float degs)
+{
+	Vector3f axis;
+	if (axisId == 0)axis << 1, 0, 0;
+	if (axisId == 1)axis << 0, 1, 0;
+	if (axisId == 2)axis << 0, 0, 1;
+
+	Matrix3f rotation = AngleAxisf(degs *3.141592653589793 / 180.0, axis).toRotationMatrix();
+	mModelMatrix(0, 0) = rotation(0, 0);
+	mModelMatrix(1, 0) = rotation(1, 0);
+	mModelMatrix(2, 0) = rotation(2, 0);
+	mModelMatrix(0, 1) = rotation(0, 1);
+	mModelMatrix(1, 1) = rotation(1, 1);
+	mModelMatrix(2, 1) = rotation(2, 1);
+	mModelMatrix(0, 2) = rotation(0, 2);
+	mModelMatrix(1, 2) = rotation(1, 2);
+	mModelMatrix(2, 2) = rotation(2, 2);
+
+}
+
 MyVolumeRenderer::~MyVolumeRenderer()
 {
 	glDeleteVertexArrays(1, &vao);
@@ -75,15 +142,12 @@ void MyVolumeRenderer::Render()
 {
 	//Por enquanto a câmera é aqui mesmo...
 	Vector3f eye, focus, vup;
-	eye << 0.0, 0.0, -3.0;
+	eye << 0.0, 2.0, -3.0;
 	focus << 0.0, 0.0, 0.0;
 	vup << 0.0, 1.0, 0.0;
 	lookAt(eye, focus, vup);
 	setPerspective(45, 1, 0.01, 100);
-	mModelMatrix << 1, 0, 0, 0,
-					0, 1, 0, 0,
-					0, 0, 1, 0,
-					0, 0, 0, 1;
+
 	Matrix4f mvp = mProjectionMatrix * mViewMatrix * mModelMatrix;
 	//O que tem que ser feito aqui:
 	//1)Exibir o cubo de suporte na tela
