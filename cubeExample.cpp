@@ -11,12 +11,15 @@ stringstream defineVertexShader()
 	ss << "#version 400" << endl;
 	ss << "layout (location = 0) in vec3 vertex;" << endl;
 	ss << "layout (location = 1) in vec3 color;" << endl;
+	ss << "layout (location = 2) in vec2 texCoord;" << endl;
 	ss << "uniform mat4 modelMat;" << endl;
 	ss << "uniform mat4 cameraMat;" << endl;
 	ss << "out vec3 vertexColor;" << endl;
+	ss << "out vec2 vertexTexCoord;" << endl;
 	ss << "void main(){" << endl;
 	ss << "  gl_Position = cameraMat * modelMat * vec4(vertex, 1.0);" << endl;
 	ss << "  vertexColor = color;" << endl;
+	ss << "  vertexTexCoord = texCoord;" << endl;
 	ss << "}";
 	return ss;
 }
@@ -25,10 +28,17 @@ stringstream defineFragmentShader()
 {
 	stringstream ss;
 	ss << "#version 400" << endl;
+	ss << "uniform sampler2D textureSampler;" << endl;
+	ss << "uniform bool isUsandoTextura;" << endl;
 	ss << "in vec3 vertexColor;" << endl;
+	ss << "in vec2 vertexTexCoord;" << endl;
 	ss << "out vec4 finalColor;" << endl;
 	ss << "void main(){" << endl;
-	ss << "  finalColor = vec4(vertexColor, 1.0);" << endl;
+	ss << "  if (!isUsandoTextura) {" << endl;
+	ss << "    finalColor = vec4(vertexColor, 1.0);" << endl;
+	ss << "  }else{" << endl;
+	ss << "    finalColor = texture(textureSampler, vertexTexCoord);" << endl;
+	ss << "  }" << endl;
 	ss << "}";
 	return ss;
 }
@@ -188,8 +198,56 @@ vector<GLfloat> defineNormals()
 	v.push_back(-1); v.push_back(0); v.push_back(0);
 	return v;
 }
+
+vector<GLfloat> defineTexCoords()
+{
+	vector<GLfloat> texCoords;
+	texCoords.push_back(0.0f); texCoords.push_back(0.0f);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f);
+
+	texCoords.push_back(0.0f); texCoords.push_back(0.0f);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f);
+
+	texCoords.push_back(0.0f); texCoords.push_back(0.0f);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f);
+
+	texCoords.push_back(0.0f); texCoords.push_back(0.0f);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f);
+
+	texCoords.push_back(0.0f); texCoords.push_back(0.0f);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f);
+
+	texCoords.push_back(0.0f); texCoords.push_back(0.0f);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f);
+	texCoords.push_back(0.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(1.0f);
+	texCoords.push_back(1.0f); texCoords.push_back(0.0f);
+	return texCoords;
+}
 CubeExample::CubeExample()
 {
+	usandoTextura = false;
 	//O que tem que ser feito aqui:
 	//1)Criar o shader do volume renderer
 	myShader = make_shared<Shader>(defineVertexShader(), defineFragmentShader());
@@ -198,19 +256,25 @@ CubeExample::CubeExample()
 	vertexesVbo = CreateBuffer<float>(GL_ARRAY_BUFFER, vertexes);
 	colors = defineColors();
 	colorsVbo = CreateBuffer<float>(GL_ARRAY_BUFFER, colors);
+	texCoords = defineTexCoords();
+	tcVbo = CreateBuffer<GLfloat>(GL_ARRAY_BUFFER, texCoords);
 	vao = 0;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	myShader->UseProgram();
 	GLuint vpLocation = myShader->GetAttribute("vertex");
 	GLuint normalLocation = myShader->GetAttribute("color");
+	GLuint texCoordLocation = myShader->GetAttribute("texCoord");
 	glEnableVertexAttribArray(vpLocation);
 	glEnableVertexAttribArray(normalLocation);
+	glEnableVertexAttribArray(texCoordLocation);
 	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexesVbo);
 	glVertexAttribPointer(vpLocation, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, colorsVbo);
 	glVertexAttribPointer(normalLocation, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, tcVbo);
+	glVertexAttribPointer(texCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 	//Valores iniciais das matrizes
 	mProjectionMatrix << 1, 0, 0, 0,
 						 0, 1, 0, 0,
@@ -224,6 +288,18 @@ CubeExample::CubeExample()
 					0, 1, 0, 0,
 					0, 0, 1, 0,
 					0, 0, 0, 1;
+}
+
+void CubeExample::SetTextura(ImageType::Pointer tex)
+{
+	usandoTextura = true;
+	textura = 0;
+	glGenTextures(1, &textura);
+	glBindTexture(GL_TEXTURE_2D, textura);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, tex->GetLargestPossibleRegion().GetSize()[0],
+		tex->GetLargestPossibleRegion().GetSize()[1], 0, GL_RED, GL_FLOAT, tex->GetBufferPointer());
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 }
 
 void CubeExample::Render()
@@ -242,14 +318,24 @@ void CubeExample::Render()
 	myShader->UseProgram();
 	GLuint cameraMatLocation = myShader->GetUniform("cameraMat");
 	GLuint modelMatLocation = myShader->GetUniform("modelMat");
+	GLuint isUsandoTexturaLocation = myShader->GetUniform("isUsandoTextura");
+	GLuint textureSamplerLocation = myShader->GetUniform("textureSampler");
 	glUniformMatrix4fv(cameraMatLocation, 1, GL_FALSE, cameraMat.data());
 	glUniformMatrix4fv(modelMatLocation, 1, GL_FALSE, mModelMatrix.data());
+	glUniform1i(isUsandoTexturaLocation, usandoTextura);
+	//Ativação da textura no shader
+	glActiveTexture(GL_TEXTURE0);
+	glUniform1i(textureSamplerLocation, /*GL_TEXTURE*/0);
+	glBindTexture(GL_TEXTURE_2D, textura);
 
 	glBindVertexArray(vao);
 	GLuint vertexLocation = myShader->GetAttribute("vertex");
 	glBindAttribLocation(myShader->GetProgramId(), vertexLocation, "vertex");
-	GLuint normalLocation = myShader->GetAttribute("color");
-	glBindAttribLocation(myShader->GetProgramId(), normalLocation, "color");
+	GLuint colorLocation = myShader->GetAttribute("color");
+	glBindAttribLocation(myShader->GetProgramId(), colorLocation, "color");
+	GLuint texCoordLocation = myShader->GetAttribute("texCoord");
+	glBindAttribLocation(myShader->GetProgramId(), texCoordLocation, "texCoord");
+
 
 	glDrawArrays(GL_TRIANGLES, 0, vertexes.size() / 3);
 	std::cout << "aa" << endl;

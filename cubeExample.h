@@ -1,14 +1,17 @@
 #pragma once
 #include "rendering3d.h"
 #include <eigen3\Eigen\Geometry>
+#include "itkTypes.h"
 using namespace std;
 using namespace Eigen;
 class CubeExample
 {
 private:
+	bool usandoTextura;
 	shared_ptr<Shader> myShader;
-	vector<GLfloat> vertexes, colors;
-	GLuint vao, vertexesVbo, colorsVbo;
+	vector<GLfloat> vertexes, colors, texCoords;//Onde os buffers ficaram guardados na memória antes de ir pra GPU
+	GLuint vao, vertexesVbo, colorsVbo, tcVbo; //A vertex array object e seus vertexes buffers
+	GLuint textura; //A textura do objeto. Por enquanto a sessão da textura está toda hardcoded
 	//Por enquanto a infraestrutura de câmera ficará aqui. Depois movo para um lugar mais conveniente
 	Matrix<float,4,4,Eigen::DontAlign> mViewMatrix, mProjectionMatrix, mModelMatrix;
 	void lookAt(const Eigen::Vector3f& position, const Eigen::Vector3f& target, const Eigen::Vector3f& up)
@@ -44,9 +47,10 @@ private:
 		return resultBuffer;
 	}
 public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+//	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	CubeExample();
 	~CubeExample();
+	void SetTextura(ImageType::Pointer tex);
 	void Render();
 	void RotateAround(int axisId, float degs);
 };

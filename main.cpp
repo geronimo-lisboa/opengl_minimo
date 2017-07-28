@@ -83,6 +83,7 @@ int main(int argc, char** argv)
 				//obj = make_shared<Object3dTexture2d>(imagePath + "vertexShader.glsl", imagePath + "fragmentShader.glsl", originalImage); --TESTE PRA CARREGAR UMA TEXTURA
 				//obj = make_shared<Object3dTexture3d>(imagePath + "vertexShader3d.glsl", imagePath + "fragmentShader3d.glsl", tomography);--TESTE DA TEXTURA 3D
 				volume = make_shared<CubeExample>();
+				volume->SetTextura(originalImage);
 				//Seta o callback de tecla;
 				glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 				{
