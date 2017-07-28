@@ -7,10 +7,10 @@ using namespace Eigen;
 class CubeExample
 {
 private:
-	bool usandoTextura;
+	bool usandoTextura, usandoIluminacao;
 	shared_ptr<Shader> myShader;
-	vector<GLfloat> vertexes, colors, texCoords;//Onde os buffers ficaram guardados na memória antes de ir pra GPU
-	GLuint vao, vertexesVbo, colorsVbo, tcVbo; //A vertex array object e seus vertexes buffers
+	vector<GLfloat> vertexes, colors, texCoords, normalCoords;//Onde os buffers ficaram guardados na memória antes de ir pra GPU
+	GLuint vao, vertexesVbo, colorsVbo, tcVbo, normalVbo; //A vertex array object e seus vertexes buffers
 	GLuint textura; //A textura do objeto. Por enquanto a sessão da textura está toda hardcoded
 	//Por enquanto a infraestrutura de câmera ficará aqui. Depois movo para um lugar mais conveniente
 	Matrix<float,4,4,Eigen::DontAlign> mViewMatrix, mProjectionMatrix, mModelMatrix;
