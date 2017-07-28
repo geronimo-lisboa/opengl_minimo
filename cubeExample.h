@@ -10,7 +10,7 @@ private:
 	vector<GLfloat> vertexes, normals;
 	GLuint vao, vertexesVbo, normalsVbo;
 	//Por enquanto a infraestrutura de câmera ficará aqui. Depois movo para um lugar mais conveniente
-	Matrix4f mViewMatrix, mProjectionMatrix, mModelMatrix;
+	Matrix<float,4,4,Eigen::DontAlign> mViewMatrix, mProjectionMatrix, mModelMatrix;
 	void lookAt(const Eigen::Vector3f& position, const Eigen::Vector3f& target, const Eigen::Vector3f& up)
 	{
 		Matrix3f R;
@@ -44,6 +44,7 @@ private:
 		return resultBuffer;
 	}
 public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	CubeExample();
 	~CubeExample();
 	void Render();
