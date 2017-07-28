@@ -9,17 +9,15 @@ stringstream defineVertexShader()
 {
 	stringstream ss;
 	ss << "#version 400" << endl;
-	ss << "layout(location = 0) in vec3 vertex;" << endl;
-	ss << "layout(location = 1) in vec3 normal;" << endl;
-	ss << "uniform mat4 mvp;" << endl;
-	ss << "uniform mat4 modelMatrix;" << endl;
-	ss << "out vec3 fragVert;" << endl;
-	ss << "out vec3 fragNormal;" << endl;
+	ss << "layout (location = 0) in vec3 vertex;" << endl;
+	ss << "layout (location = 1) in vec3 color;" << endl;
+	ss << "uniform mat4 modelMat;" << endl;
+	ss << "uniform mat4 cameraMat;" << endl;
+	ss << "out vec3 vertexColor;" << endl;
 	ss << "void main(){" << endl;
-	ss << "  fragVert = vertex;" << endl;
-	ss << "  fragNormal = normal;" << endl;
-	ss << "  gl_Position = mvp * vec4(vertex, 1.0);" << endl;
-	ss << "}" << endl;
+	ss << "  gl_Position = cameraMat * modelMat * vec4(vertex, 1.0);" << endl;
+	ss << "  vertexColor = color;" << endl;
+	ss << "}";
 	return ss;
 }
 //https://www.tomdalling.com/blog/modern-opengl/06-diffuse-point-lighting/
@@ -27,13 +25,10 @@ stringstream defineFragmentShader()
 {
 	stringstream ss;
 	ss << "#version 400" << endl;
-	ss << "uniform mat4 modelMatrix;" << endl;
-	ss << "in vec3 fragVert;" << endl;
-	ss << "in vec3 fragNormal;" << endl;
+	ss << "in vec3 vertexColor;" << endl;
 	ss << "out vec4 finalColor;" << endl;
 	ss << "void main(){" << endl;
-	ss << "  vec3 temp = fragVert + fragNormal;" << endl;
-	ss << "  finalColor = vec4(temp, 1.0);" << endl;
+	ss << "  finalColor = vec4(vertexColor, 1.0);" << endl;
 	ss << "}";
 	return ss;
 }
@@ -91,6 +86,62 @@ vector<GLfloat> defineVertexes()
 
 	return v;
 }
+
+vector<GLfloat> defineColors()
+{
+	vector<GLfloat> vec;
+	vec.push_back(0.0); vec.push_back(0.0); vec.push_back(0.0);
+	vec.push_back(0.0); vec.push_back(0.0); vec.push_back(0.0);
+	vec.push_back(0.0); vec.push_back(0.0); vec.push_back(0.0);
+	vec.push_back(0.0); vec.push_back(0.0); vec.push_back(0.0);
+	vec.push_back(0.0); vec.push_back(0.0); vec.push_back(0.0);
+	vec.push_back(0.0); vec.push_back(0.0); vec.push_back(0.0);
+
+	vec.push_back(1.0); vec.push_back(0.0); vec.push_back(0.0);
+	vec.push_back(1.0); vec.push_back(0.0); vec.push_back(0.0);
+	vec.push_back(1.0); vec.push_back(0.0); vec.push_back(0.0);
+	vec.push_back(1.0); vec.push_back(0.0); vec.push_back(0.0);
+	vec.push_back(1.0); vec.push_back(0.0); vec.push_back(0.0);
+	vec.push_back(1.0); vec.push_back(0.0); vec.push_back(0.0);
+
+	vec.push_back(1.0); vec.push_back(1.0); vec.push_back(0.0);
+	vec.push_back(1.0); vec.push_back(1.0); vec.push_back(0.0);
+	vec.push_back(1.0); vec.push_back(1.0); vec.push_back(0.0);
+	vec.push_back(1.0); vec.push_back(1.0); vec.push_back(0.0);
+	vec.push_back(1.0); vec.push_back(1.0); vec.push_back(0.0);
+	vec.push_back(1.0); vec.push_back(1.0); vec.push_back(0.0);
+
+	vec.push_back(1.0); vec.push_back(1.0); vec.push_back(1.0);
+	vec.push_back(1.0); vec.push_back(1.0); vec.push_back(1.0);
+	vec.push_back(1.0); vec.push_back(1.0); vec.push_back(1.0);
+	vec.push_back(1.0); vec.push_back(1.0); vec.push_back(1.0);
+	vec.push_back(1.0); vec.push_back(1.0); vec.push_back(1.0);
+	vec.push_back(1.0); vec.push_back(1.0); vec.push_back(1.0);
+
+	vec.push_back(0.0); vec.push_back(1.0); vec.push_back(1.0);
+	vec.push_back(0.0); vec.push_back(1.0); vec.push_back(1.0);
+	vec.push_back(0.0); vec.push_back(1.0); vec.push_back(1.0);
+	vec.push_back(0.0); vec.push_back(1.0); vec.push_back(1.0);
+	vec.push_back(0.0); vec.push_back(1.0); vec.push_back(1.0);
+	vec.push_back(0.0); vec.push_back(1.0); vec.push_back(1.0);
+
+	vec.push_back(0.0); vec.push_back(0.0); vec.push_back(1.0);
+	vec.push_back(0.0); vec.push_back(0.0); vec.push_back(1.0);
+	vec.push_back(0.0); vec.push_back(0.0); vec.push_back(1.0);
+	vec.push_back(0.0); vec.push_back(0.0); vec.push_back(1.0);
+	vec.push_back(0.0); vec.push_back(0.0); vec.push_back(1.0);
+	vec.push_back(0.0); vec.push_back(0.0); vec.push_back(1.0);
+
+	vec.push_back(1.0); vec.push_back(0.0); vec.push_back(1.0);
+	vec.push_back(1.0); vec.push_back(0.0); vec.push_back(1.0);
+	vec.push_back(1.0); vec.push_back(0.0); vec.push_back(1.0);
+	vec.push_back(1.0); vec.push_back(0.0); vec.push_back(1.0);
+	vec.push_back(1.0); vec.push_back(0.0); vec.push_back(1.0);
+	vec.push_back(1.0); vec.push_back(0.0); vec.push_back(1.0);
+
+	return vec;
+}
+
 vector<GLfloat> defineNormals()
 {
 	vector<GLfloat> v;
@@ -145,20 +196,20 @@ CubeExample::CubeExample()
 	//2)Criar o cubo de suporte
 	vertexes = defineVertexes();
 	vertexesVbo = CreateBuffer<float>(GL_ARRAY_BUFFER, vertexes);
-	normals = defineNormals();
-	normalsVbo = CreateBuffer<float>(GL_ARRAY_BUFFER, normals);
+	colors = defineColors();
+	colorsVbo = CreateBuffer<float>(GL_ARRAY_BUFFER, colors);
 	vao = 0;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	myShader->UseProgram();
 	GLuint vpLocation = myShader->GetAttribute("vertex");
-	GLuint normalLocation = myShader->GetAttribute("normal");
+	GLuint normalLocation = myShader->GetAttribute("color");
 	glEnableVertexAttribArray(vpLocation);
 	glEnableVertexAttribArray(normalLocation);
 	glUseProgram(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexesVbo);
 	glVertexAttribPointer(vpLocation, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, normalsVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colorsVbo);
 	glVertexAttribPointer(normalLocation, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 	//Valores iniciais das matrizes
 	mProjectionMatrix << 1, 0, 0, 0,
@@ -184,22 +235,21 @@ void CubeExample::Render()
 	vup << 0.0, 1.0, 0.0;
 	lookAt(eye, focus, vup);
 	setPerspective(45, 1, 0.01, 100);
-	Matrix4f mv = mViewMatrix * mModelMatrix;
-	Matrix4f mvp = mProjectionMatrix * mViewMatrix * mModelMatrix;
+	Matrix4f cameraMat = mProjectionMatrix * mViewMatrix;
 	//O que tem que ser feito aqui:
 	//1)Exibir o cubo de suporte na tela
 	//2)Rotacioná-lo para eu ver se está tudo ok.
 	myShader->UseProgram();
-	GLuint mvpLocation = myShader->GetUniform("mvp");
-	GLuint modelMatrixLocation = myShader->GetUniform("modelMatrix");
-	glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, mModelMatrix.data());//Passa a mModelMatrix pro shader, necessária pra transformar as normais.
-	glUniformMatrix4fv(mvpLocation, 1, GL_FALSE, mvp.data());
+	GLuint cameraMatLocation = myShader->GetUniform("cameraMat");
+	GLuint modelMatLocation = myShader->GetUniform("modelMat");
+	glUniformMatrix4fv(cameraMatLocation, 1, GL_FALSE, cameraMat.data());
+	glUniformMatrix4fv(modelMatLocation, 1, GL_FALSE, mModelMatrix.data());
 
 	glBindVertexArray(vao);
 	GLuint vertexLocation = myShader->GetAttribute("vertex");
 	glBindAttribLocation(myShader->GetProgramId(), vertexLocation, "vertex");
-	GLuint normalLocation = myShader->GetAttribute("normal");
-	glBindAttribLocation(myShader->GetProgramId(), normalLocation, "normal");
+	GLuint normalLocation = myShader->GetAttribute("color");
+	glBindAttribLocation(myShader->GetProgramId(), normalLocation, "color");
 
 	glDrawArrays(GL_TRIANGLES, 0, vertexes.size() / 3);
 	std::cout << "aa" << endl;
@@ -229,3 +279,4 @@ void CubeExample::RotateAround(int axisId, float degs)
 	mModelMatrix(2, 2) = rotation(2, 2);
 
 }
+

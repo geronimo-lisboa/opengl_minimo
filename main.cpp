@@ -103,8 +103,8 @@ int main(int argc, char** argv)
 			}
 			else
 			{
-		//		volume->RotateAround(1, ang);
-		//		ang = ang+1;
+				volume->RotateAround(1, ang);
+				ang = ang+1;
 				//obj->Render(); -- Passei pro teste do volume renderer...
 				volume->Render();
 			}
