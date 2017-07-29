@@ -11,10 +11,12 @@
 #include "rendering3d.h"
 #include "loadDicom.h"
 #include "cubeExample.h"
+#include "camera.h"
 const std::string imagePath = GetExecutablePath();
 const int screenWidth = 300;
 const int screenHeight = 300;
 
+shared_ptr<Camera> camera = nullptr;
 shared_ptr<Object3d> obj = nullptr;
 shared_ptr<CubeExample> volume = nullptr;
 
@@ -100,6 +102,11 @@ int main(int argc, char** argv)
 						myObj->Recuar();
 					}
 				});
+
+				array<float, 3> eye = { {0.0, 2.0, -3.0} };
+				array<float, 3> focus = { {0.0, 0.0, 0.0} };
+				array<float, 3> vup = { {0.0, 1.0, 0.0} };
+				camera = make_shared<Camera>(eye, focus, vup, 45, 1, 0.01, 100);
 				isInitialized = true;
 			}
 			else
@@ -107,7 +114,7 @@ int main(int argc, char** argv)
 				volume->RotateAround(1, ang);
 				ang = ang+1;
 				//obj->Render(); -- Passei pro teste do volume renderer...
-				volume->Render();
+				volume->Render(camera);
 			}
 			glfwPollEvents();
 			glfwSwapBuffers(window);
