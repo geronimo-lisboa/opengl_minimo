@@ -28,11 +28,11 @@ stringstream defineVertexShader()
 	ss << "}";
 	return ss;
 }
-//https://www.tomdalling.com/blog/modern-opengl/06-diffuse-point-lighting/
 stringstream defineFragmentShader()
 {
 	stringstream ss;
 	ss << "#version 400" << endl;
+	ss << "layout (location =10) out vec3 color;" << endl;
 	ss << "uniform mat4 modelMat;" << endl;
 	ss << "uniform sampler2D textureSampler;" << endl;
 	ss << "uniform bool isUsandoTextura;" << endl;
@@ -110,8 +110,6 @@ vector<GLfloat> defineVertexes()
 	v.push_back(-1.0); v.push_back(1.0); v.push_back(-1.0);  //IDF
 	v.push_back(-1.0); v.push_back(1.0); v.push_back(1.0);  //SDF
 	v.push_back(-1.0); v.push_back(-1.0); v.push_back(1.0); //SEF
-
-
 	return v;
 }
 
@@ -307,15 +305,38 @@ CubeExample::CubeExample()
 	glVertexAttribPointer(texCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
 	glVertexAttribPointer(normalLocation, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-	//Valores iniciais das matrizes
 }
+static bool fboCriado = false;
+static GLuint fb = 0, fbColor = 0, fbDepth = 0;
+GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
 
+
+void CHECK_FRAMEBUFFER_STATUS()
+{
+	GLenum status;
+	status = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+	switch (status) {
+	case GL_FRAMEBUFFER_COMPLETE:
+		break;
+	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+		throw std::exception("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
+		break;
+	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+		throw std::exception("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
+		break;
+	case GL_FRAMEBUFFER_UNSUPPORTED:
+		/* choose different formats */
+		throw std::exception("framebuffer não suportado");
+		break;
+	default:
+		/* programming error; will fail on all hardware */
+		throw std::exception("erro de programacao no framebuffer");
+	}
+}
 void CubeExample::Render(shared_ptr<Camera> camera)
 {
+
 	Matrix4f cameraMat = camera->GetCameraMatrix();
-	//O que tem que ser feito aqui:
-	//1)Exibir o cubo de suporte na tela
-	//2)Rotacioná-lo para eu ver se está tudo ok.
 	myShader->UseProgram();
 	GLuint cameraMatLocation = myShader->GetUniform("cameraMat");
 	GLuint modelMatLocation = myShader->GetUniform("modelMat");
@@ -332,7 +353,6 @@ void CubeExample::Render(shared_ptr<Camera> camera)
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(textureSamplerLocation, /*GL_TEXTURE*/0);
 	glBindTexture(GL_TEXTURE_2D, textura);
-
 	glBindVertexArray(vao);
 	GLuint vertexLocation = myShader->GetAttribute("vertex");
 	glBindAttribLocation(myShader->GetProgramId(), vertexLocation, "vertex");
@@ -342,9 +362,7 @@ void CubeExample::Render(shared_ptr<Camera> camera)
 	glBindAttribLocation(myShader->GetProgramId(), texCoordLocation, "texCoord");
 	GLuint normalLocation = myShader->GetAttribute("normal");
 	glBindAttribLocation(myShader->GetProgramId(), normalLocation, "normal");
-
 	glDrawArrays(GL_TRIANGLES, 0, vertexes.size() / 3);
-	std::cout << "aa" << endl;
 }
 
 void CubeExample::SetTextura(ImageType::Pointer tex)

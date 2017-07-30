@@ -40,6 +40,7 @@ public:
 	virtual void Render() = 0;
 };
 
+
 class Object3dTexture2d:public Object3d
 {
 private:

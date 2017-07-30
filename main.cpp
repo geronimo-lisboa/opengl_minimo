@@ -12,6 +12,7 @@
 #include "loadDicom.h"
 #include "cubeExample.h"
 #include "camera.h"
+#include "framebuffer.h"
 const std::string imagePath = GetExecutablePath();
 const int screenWidth = 300;
 const int screenHeight = 300;
@@ -19,6 +20,7 @@ const int screenHeight = 300;
 shared_ptr<Camera> camera = nullptr;
 shared_ptr<Object3d> obj = nullptr;
 shared_ptr<CubeExample> volume = nullptr;
+shared_ptr<Framebuffer> framebuffer = nullptr;
 
 int main(int argc, char** argv)
 {
@@ -29,12 +31,6 @@ int main(int argc, char** argv)
 		imageLoader->SetFileName(imagePath + "phantom.png");
 		imageLoader->Update();
 		ImageType::Pointer originalImage = imageLoader->GetOutput();
-		//Float3dImageType::Pointer tomography = loadDicom("C:\\Users\\geronimo\\dicom\\Marching Man");
-		//itk::MinimumMaximumImageFilter<Float3dImageType>::Pointer minmax = itk::MinimumMaximumImageFilter<Float3dImageType>::New();
-		//minmax->SetInput(tomography);
-		//minmax->Update();
-		//std::cout << "max = " << minmax->GetMaximum() << std::endl;
-		//std::cout << "min = " << minmax->GetMinimum() << std::endl;
 
 		//2)Criação da janela/contexto/blablabla da glfw.
 		GLFWwindow* window;
@@ -107,13 +103,16 @@ int main(int argc, char** argv)
 				array<float, 3> focus = { {0.0, 0.0, 0.0} };
 				array<float, 3> vup = { {0.0, 1.0, 0.0} };
 				camera = make_shared<Camera>(eye, focus, vup, 45, 1, 0.01, 100);
+				camera->screenHeight = screenHeight;
+				camera->screenWidth = screenWidth;
+				framebuffer = make_shared<Framebuffer>(camera->screenWidth, camera->screenHeight);
 				isInitialized = true;
 			}
 			else
 			{
 				volume->RotateAround(1, ang);
 				ang = ang+1;
-				//obj->Render(); -- Passei pro teste do volume renderer...
+
 				volume->Render(camera);
 			}
 			glfwPollEvents();
